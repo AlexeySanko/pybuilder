@@ -25,6 +25,8 @@ except NameError:
 import unittest
 from test_utils import patch, Mock, MagicMock
 
+from os.path import normpath as os_normpath
+
 from pybuilder.core import Project
 from pybuilder.plugins.python.pycharm_plugin import (
     pycharm_generate,
@@ -62,7 +64,7 @@ class PycharmPluginTests(unittest.TestCase):
 
         pycharm_generate(project, Mock())
 
-        iml_path = os.path.normpath('basedir/.idea/pybuilder.iml')
+        iml_path = os_normpath('basedir/.idea/pybuilder.iml')
         mock_open.assert_called_with(iml_path, 'w')
         metadata_file = mock_open.return_value.__enter__.return_value
         metadata_file.write.assert_called_with("""<?xml version="1.0" encoding="UTF-8"?>

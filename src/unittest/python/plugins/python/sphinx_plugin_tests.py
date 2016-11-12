@@ -19,7 +19,7 @@
 from unittest import TestCase
 from test_utils import Mock, patch, call
 
-import os
+from os.path import normpath as os_normpath
 import sys
 from logging import Logger
 
@@ -98,8 +98,8 @@ class SphinxPluginInitializationTests(TestCase):
         self.assertEquals(
             self.project.get_property("sphinx_source_dir"), "docs")
         self.assertEquals(
-            os.path.normpath(self.project.get_property("sphinx_output_dir")),
-            os.path.normpath("docs/_build/"))
+            os_normpath(self.project.get_property("sphinx_output_dir")),
+            os_normpath("docs/_build/"))
         self.assertEquals(
             self.project.get_property("sphinx_config_path"), "docs")
         self.assertEquals(
@@ -125,8 +125,9 @@ class SphinxBuildCommandTests(TestCase):
         sphinx_build_command = get_sphinx_build_command(self.project, Mock(), 'JSONx')
 
         self.assertEqual(sphinx_build_command,
-                         ["sphinx", "-b", "JSONx", os.path.normpath("basedir/docs/"),
-                          os.path.normpath("basedir/docs/_build/")])
+                         ["sphinx", "-b", "JSONx",
+                          os_normpath("basedir/docs") + os_normpath("/"),
+                          os_normpath("basedir/docs/_build") + os_normpath("/")])
 
     def test_should_generate_sphinx_build_command_verbose(self):
         self.project.set_property("sphinx_config_path", "docs/")
@@ -138,8 +139,9 @@ class SphinxBuildCommandTests(TestCase):
         sphinx_build_command = get_sphinx_build_command(self.project, Mock(), 'JSONx')
 
         self.assertEqual(sphinx_build_command,
-                         ["sphinx", "-b", "JSONx", "-v", os.path.normpath("basedir/docs/"),
-                          os.path.normpath("basedir/docs/_build/")])
+                         ["sphinx", "-b", "JSONx", "-v",
+                          os_normpath("basedir/docs") + os_normpath("/"),
+                          os_normpath("basedir/docs/_build") + os_normpath("/")])
 
     def test_should_generate_sphinx_build_command_debug(self):
         self.project.set_property("sphinx_config_path", "docs/")
@@ -154,8 +156,9 @@ class SphinxBuildCommandTests(TestCase):
         sphinx_build_command = get_sphinx_build_command(self.project, logger, 'JSONx')
 
         self.assertEqual(sphinx_build_command,
-                         ["sphinx", "-b", "JSONx", "-vvvv", os.path.normpath("basedir/docs/"),
-                          os.path.normpath("basedir/docs/_build/")])
+                         ["sphinx", "-b", "JSONx", "-vvvv",
+                          os_normpath("basedir/docs/") + os_normpath("/"),
+                          os_normpath("basedir/docs/_build") + os_normpath("/")])
 
     def test_should_generate_sphinx_build_command_forced_builder_dir(self):
         self.project.set_property("sphinx_config_path", "docs/")
@@ -167,8 +170,9 @@ class SphinxBuildCommandTests(TestCase):
         sphinx_build_command = get_sphinx_build_command(self.project, Mock(), 'JSONx')
 
         self.assertEqual(sphinx_build_command,
-                         ["sphinx", "-b", "JSONx", os.path.normpath("basedir/docs/"),
-                          os.path.normpath("basedir/docs/_build/JSONx")])
+                         ["sphinx", "-b", "JSONx",
+                          os_normpath("basedir/docs") + os_normpath("/"),
+                          os_normpath("basedir/docs/_build/jsonx")])
 
     def test_should_generate_sphinx_build_command_builder_dir(self):
         self.project.set_property("sphinx_config_path", "docs/")
@@ -179,20 +183,21 @@ class SphinxBuildCommandTests(TestCase):
         sphinx_build_command = get_sphinx_build_command(self.project, Mock(), 'JSONx')
 
         self.assertEqual(sphinx_build_command,
-                         ["sphinx", "-b", "JSONx", os.path.normpath("basedir/docs/"),
-                          os.path.normpath("basedir/docs/_build/JSONx")])
+                         ["sphinx", "-b", "JSONx",
+                          os_normpath("basedir/docs") + os_normpath("/"),
+                          os_normpath("basedir/docs/_build/jsonx")])
 
     def test_should_generate_sphinx_quickstart_command_with_project_properties(self):
         self.project.set_property("sphinx_doc_author", "bar")
         self.project.set_property("sphinx_project_name", "foo")
         self.project.set_property("sphinx_project_version", "3")
-        self.project.set_property("sphinx_source_dir", os.path.normpath("docs/"))
+        self.project.set_property("sphinx_source_dir", os_normpath("docs/"))
 
         sphinx_quickstart_command = get_sphinx_quickstart_command(self.project)
 
         self.assertEqual(sphinx_quickstart_command,
                          ["sphinx.quickstart", "-q", "-p", "foo", "-a", "bar", "-v", "3",
-                          os.path.normpath("basedir/docs/")])
+                          os_normpath("basedir/docs/")])
 
     @patch('pybuilder.plugins.python.sphinx_plugin.execute_command', return_value=0)
     def test_should_execute_command_regardless_of_verbose(self, exec_command):
@@ -219,8 +224,8 @@ class SphinxBuildCommandTests(TestCase):
                               '-H',
                               'project_name',
                               '-o',
-                              os.path.normpath('basedir/dir_target/sphinx_pyb/apidoc'),
-                              os.path.normpath('basedir/dir_source')
+                              os_normpath('basedir/dir_target/sphinx_pyb/apidoc'),
+                              os_normpath('basedir/dir_source')
                               ]
                              )
         finally:
@@ -251,8 +256,8 @@ class SphinxBuildCommandTests(TestCase):
                               '-H',
                               'project_name',
                               '-o',
-                              os.path.normpath('basedir/dir_target/sphinx_pyb/apidoc'),
-                              os.path.normpath('basedir/dir_source')
+                              os_normpath('basedir/dir_target/sphinx_pyb/apidoc'),
+                              os_normpath('basedir/dir_source')
                               ]
                              )
         finally:
@@ -283,7 +288,7 @@ class SphinxBuildCommandTests(TestCase):
 
         sphinx_pyb_quickstart_generate(self.project, Mock())
 
-        open().__enter__().write.assert_called_with(os.path.normpath("""\
+        open().__enter__().write.assert_called_with(os_normpath("""\
 # Automatically generated by PyB
 import sys
 from os import path
@@ -301,8 +306,8 @@ from sphinx_pyb_conf import *
 
 # Overwrite PyB-settings here statically if that's the thing that you want
 """))
-        symlink.assert_called_with(os.path.normpath("../basedir/dir_target/sphinx_pyb/apidoc"),
-                                   os.path.normpath("basedir/sphinx_source_dir/apidoc"),
+        symlink.assert_called_with(os_normpath("../basedir/dir_target/sphinx_pyb/apidoc"),
+                                   os_normpath("basedir/sphinx_source_dir/apidoc"),
                                    target_is_directory=True)
 
     @patch("pybuilder.plugins.python.sphinx_plugin.open", create=True)
@@ -340,27 +345,35 @@ from sphinx_pyb_conf import *
         finally:
             del sys.modules["sphinx"]
 
-        exists.assert_called_with(os.path.normpath("basedir/dir_target/sphinx_pyb/apidoc"))
-        rmtree.assert_called_with(os.path.normpath("basedir/dir_target/sphinx_pyb/apidoc"))
-        mkdir.assert_called_with(os.path.normpath("basedir/dir_target/sphinx_pyb/apidoc"))
+        exists.assert_called_with(os_normpath("basedir/dir_target/sphinx_pyb/apidoc"))
+        rmtree.assert_called_with(os_normpath("basedir/dir_target/sphinx_pyb/apidoc"))
+        mkdir.assert_called_with(os_normpath("basedir/dir_target/sphinx_pyb/apidoc"))
+        last_call = os_normpath("\nimport sys\nsys.path.insert(0, 'basedir/dir_source')\n")
+        # Windows specific issue of mock_call
+        if sys.platform == 'win32':
+            last_call = last_call.replace("\\", "\\\\")
         open().__enter__().write.assert_has_calls(
             [call("a = 1\n"),
              call("b = 'foo'\n"),
-             call("\nimport sys\nsys.path.insert(0, 'basedir/dir_source')\n")],
+             call(last_call)],
             any_order=True)
         execute_command.assert_has_calls([
             call([sys.executable, '-m', 'sphinx.apidoc', '-H', 'project_name', '-o',
-                  'basedir/dir_target/sphinx_pyb/apidoc', 'basedir/dir_source']
+                  os_normpath('basedir/dir_target/sphinx_pyb/apidoc'),
+                  os_normpath('basedir/dir_source')]
                  if sys.version_info[:2] < (3, 3) else
                  [sys.executable, '-m', 'sphinx.apidoc', '-H', 'project_name', '--implicit-namespaces', '-o',
-                  'basedir/dir_target/sphinx_pyb/apidoc', 'basedir/dir_source'],
-                 'basedir/dir_target/reports/sphinx-apidoc', shell=False),
-            call([sys.executable, '-m', 'sphinx', '-b', 'JSONx', 'basedir/sphinx_config_path',
-                  'basedir/sphinx_output_dir/JSONx'],
-                 'basedir/dir_target/reports/sphinx_JSONx', shell=False),
-            call([sys.executable, '-m', 'sphinx', '-b', 'pdf', 'basedir/sphinx_config_path',
-                  'basedir/sphinx_output_dir/pdf'],
-                 'basedir/dir_target/reports/sphinx_pdf', shell=False)])
+                  os_normpath('basedir/dir_target/sphinx_pyb/apidoc'),
+                  os_normpath('basedir/dir_source')],
+                 os_normpath('basedir/dir_target/reports/sphinx-apidoc'), shell=False),
+            call([sys.executable, '-m', 'sphinx', '-b', 'JSONx',
+                  os_normpath('basedir/sphinx_config_path'),
+                  os_normpath('basedir/sphinx_output_dir/jsonx')],
+                 os_normpath('basedir/dir_target/reports/sphinx_jsonx'), shell=False),
+            call([sys.executable, '-m', 'sphinx', '-b', 'pdf',
+                  os_normpath('basedir/sphinx_config_path'),
+                  os_normpath('basedir/sphinx_output_dir/pdf')],
+                 os_normpath('basedir/dir_target/reports/sphinx_pdf'), shell=False)])
 
     @patch("pybuilder.plugins.python.sphinx_plugin.open", create=True)
     @patch("pybuilder.plugins.python.sphinx_plugin.rmtree")

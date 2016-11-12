@@ -19,7 +19,8 @@
 import unittest
 from test_utils import Mock, patch, ANY
 
-import os
+from os.path import normpath as os_normpath
+import sys
 
 from pybuilder.core import Project
 from pybuilder.plugins.python import pytddmon_plugin
@@ -33,10 +34,10 @@ class PytddmonPluginTests(unittest.TestCase):
         project = Project('/path/to/project', name='pybuilder')
         project.set_property('dir_source_main_python', 'path/to/source')
         project.set_property(
-            'dir_source_unittest_python', 'src/unittest/python')
+            'dir_source_unittest_python', os_normpath('src/unittest/python'))
 
         pytddmon_plugin.pytddmon(project, Mock())
 
         subprocess.Popen.assert_called_with(
-            ['which python', 'which pytddmon.py', '--no-pulse'], shell=False,
-            cwd=os.path.normpath('src/unittest/python'), env=ANY)
+            ['which python', 'which pytddmon.py', '--no-pulse'], shell=(sys.platform == 'win32'),
+            cwd=os_normpath('src/unittest/python'), env=ANY)

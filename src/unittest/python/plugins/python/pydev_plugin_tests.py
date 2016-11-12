@@ -25,6 +25,8 @@ except NameError:
 import unittest
 from test_utils import patch, Mock, MagicMock, call
 
+from os.path import normpath as os_normpath
+
 from pybuilder.core import Project
 from pybuilder.plugins.python.pydev_plugin import (
     pydev_generate,
@@ -45,8 +47,8 @@ class PydevPluginTests(unittest.TestCase):
 
         pydev_generate(project, Mock())
 
-        path1 = os.path.normpath('basedir/.project')
-        path2 = os.path.normpath('basedir/.pydevproject')
+        path1 = os_normpath('basedir/.project')
+        path2 = os_normpath('basedir/.pydevproject')
         self.assertEqual(mock_open.call_args_list,
                          [call(path1, 'w'),
                           call(path2, 'w')])
