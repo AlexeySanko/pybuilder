@@ -19,6 +19,7 @@
 from __future__ import unicode_literals
 
 from unittest import TestCase, TextTestRunner
+import os
 
 from test_utils import Mock, patch
 
@@ -44,17 +45,17 @@ class PythonPathTests(TestCase):
 
         _register_test_and_source_path_and_return_test_dir(self.project, system_path, "unittest")
 
-        self.assertTrue('/path/to/project/unittest' in system_path)
-        self.assertTrue('/path/to/project/src' in system_path)
+        self.assertTrue(os.path.normpath('/path/to/project/unittest') in system_path)
+        self.assertTrue(os.path.normpath('/path/to/project/src') in system_path)
 
     def test_should_put_project_sources_before_other_sources(self):
-        system_path = ['irrelevant/sources']
+        system_path = [os.path.normpath('irrelevant/sources')]
 
         _register_test_and_source_path_and_return_test_dir(self.project, system_path, "unittest")
 
-        test_sources_index_in_path = system_path.index('/path/to/project/unittest')
-        main_sources_index_in_path = system_path.index('/path/to/project/src')
-        irrelevant_sources_index_in_path = system_path.index('irrelevant/sources')
+        test_sources_index_in_path = system_path.index(os.path.normpath('/path/to/project/unittest'))
+        main_sources_index_in_path = system_path.index(os.path.normpath('/path/to/project/src'))
+        irrelevant_sources_index_in_path = system_path.index(os.path.normpath('irrelevant/sources'))
         self.assertTrue(test_sources_index_in_path < irrelevant_sources_index_in_path and
                         main_sources_index_in_path < irrelevant_sources_index_in_path)
 

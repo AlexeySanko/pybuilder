@@ -194,7 +194,7 @@ def execute_command_and_capture_output(*command_and_arguments):
 def assert_can_execute(command_and_arguments, prerequisite, caller):
     with tempfile.NamedTemporaryFile() as f:
         try:
-            process = subprocess.Popen(command_and_arguments, stdout=f, stderr=f, shell=False)
+            process = subprocess.Popen(command_and_arguments, stdout=f, stderr=f, shell=(sys.platform == 'win32'))
             process.wait()
         except OSError:
             raise MissingPrerequisiteException(prerequisite, caller)

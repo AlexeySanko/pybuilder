@@ -164,14 +164,15 @@ class DiscoverFilesTest(unittest.TestCase):
 
     @patch("pybuilder.utils.os.walk", return_value=[("spam", [], fake_dir_contents)])
     def test_should_only_return_py_suffix(self, walk):
-        expected_result = ["spam/spam.py", "spam/eggs.py"]
+        expected_result = [os.path.normpath("spam/spam.py"),
+                           os.path.normpath("spam/eggs.py")]
         actual_result = set(discover_files("spam", ".py"))
         self.assertEquals(set(expected_result), actual_result)
         walk.assert_called_with("spam")
 
     @patch("pybuilder.utils.os.walk", return_value=[("spam", [], fake_dir_contents)])
     def test_should_only_return_py_glob(self, walk):
-        expected_result = ["spam/README.md"]
+        expected_result = [os.path.normpath("spam/README.md")]
         actual_result = set(discover_files_matching("spam", "README.?d"))
         self.assertEquals(set(expected_result), actual_result)
         walk.assert_called_with("spam")
@@ -253,7 +254,10 @@ class ApplyOnFilesTest(unittest.TestCase):
             relative_file_names.append(relative_file_name)
 
         apply_on_files("spam", callback, "*")
-        self.assertEquals(["spam/a", "spam/b", "spam/c"], absolute_file_names)
+        self.assertEquals([os.path.normpath("spam/a"),
+                           os.path.normpath("spam/b"),
+                           os.path.normpath("spam/c")],
+                          absolute_file_names)
         self.assertEquals(["a", "b", "c"], relative_file_names)
 
         walk.assert_called_with("spam")
@@ -266,7 +270,7 @@ class ApplyOnFilesTest(unittest.TestCase):
             called_on_file.append(absolute_file_name)
 
         apply_on_files("spam", callback, "a")
-        self.assertEquals(["spam/a"], called_on_file)
+        self.assertEquals([os.path.normpath("spam/a")], called_on_file)
 
         walk.assert_called_with("spam")
 
@@ -279,7 +283,7 @@ class ApplyOnFilesTest(unittest.TestCase):
             called_on_file.append(absolute_file_name)
 
         apply_on_files("spam", callback, "a", "additional argument")
-        self.assertEquals(["spam/a"], called_on_file)
+        self.assertEquals([os.path.normpath("spam/a")], called_on_file)
 
         walk.assert_called_with("spam")
 

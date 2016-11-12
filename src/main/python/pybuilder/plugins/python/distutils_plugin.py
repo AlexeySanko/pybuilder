@@ -562,7 +562,7 @@ def _run_process_and_wait(commands, cwd, stdout, stderr=None):
                                cwd=cwd,
                                stdout=stdout,
                                stderr=stderr or stdout,
-                               shell=False)
+                               shell=(sys.platform == 'win32'))
     return process.wait()
 
 

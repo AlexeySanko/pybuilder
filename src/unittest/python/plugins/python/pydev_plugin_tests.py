@@ -45,8 +45,11 @@ class PydevPluginTests(unittest.TestCase):
 
         pydev_generate(project, Mock())
 
+        path1 = os.path.normpath('basedir/.project')
+        path2 = os.path.normpath('basedir/.pydevproject')
         self.assertEqual(mock_open.call_args_list,
-                         [call('basedir/.project', 'w'), call('basedir/.pydevproject', 'w')])
+                         [call(path1, 'w'),
+                          call(path2, 'w')])
         metadata_file = mock_open.return_value.__enter__.return_value
 
         self.assertEqual(metadata_file.write.call_args_list,

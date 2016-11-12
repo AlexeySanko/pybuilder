@@ -25,6 +25,9 @@ except NameError:
 
 import unittest
 
+import os
+import sys
+
 from pybuilder.core import Project, Author, Logger
 from pybuilder.errors import BuildFailedException
 from pybuilder.pip_utils import PIP_EXEC_STANZA
@@ -376,9 +379,9 @@ class RenderSetupScriptTest(PyBuilderTestCase):
         self.project.set_property("dir_dist_scripts", 'scripts')
         actual_build_script = build_scripts_string(self.project)
         self.assertEquals(
-            "[\n            'scripts/spam',\n"
-            "            'scripts/eggs'\n"
-            "        ]", actual_build_script)
+            os.path.normpath("""[\n            'scripts/spam',
+            'scripts/eggs'
+        ]"""), actual_build_script)
 
     def test_should_render_setup_file(self):
         actual_setup_script = render_setup_script(self.project)
@@ -645,10 +648,10 @@ class RenderManifestFileTest(unittest.TestCase):
 
         actual_manifest_file = render_manifest_file(project)
 
-        self.assertEqual("""include file1
+        self.assertEqual(os.path.normpath("""include file1
 include file2
 include spam/eggs
-""", actual_manifest_file)
+"""), actual_manifest_file)
 
 
 class ExecuteDistUtilsTest(PyBuilderTestCase):
@@ -683,7 +686,8 @@ class ExecuteDistUtilsTest(PyBuilderTestCase):
     def test__run_process_and_wait(self, popen):
         commands = ["a", "b", "c"]
         _run_process_and_wait(commands, "test cwd", "test stdout", "test_stderr")
-        popen.assert_called_with(commands, cwd="test cwd", stdout="test stdout", stderr="test_stderr", shell=False)
+        curr_shell = (sys.platform == 'win32')
+        popen.assert_called_with(commands, cwd="test cwd", stdout="test stdout", stderr="test_stderr", shell=curr_shell)
 
 
 class TasksTest(PyBuilderTestCase):
@@ -757,7 +761,9 @@ class TasksTest(PyBuilderTestCase):
     @patch("pybuilder.pip_utils.execute_command")
     def test_install(self, execute_command, *args):
         install_distribution(self.project, MagicMock(Logger))
-        execute_command.assert_called_with(PIP_EXEC_STANZA + ["install", "--force-reinstall", '/whatever dist'],
+        execute_command.assert_called_with(PIP_EXEC_STANZA + ["install",
+                                                              "--force-reinstall",
+                                                              os.path.normpath('/whatever dist')],
                                            cwd=".", env=ANY,
                                            outfile_name=ANY, error_file_name=ANY, shell=False)
 
@@ -771,7 +777,8 @@ class TasksTest(PyBuilderTestCase):
         install_distribution(self.project, MagicMock(Logger))
         execute_command.assert_called_with(
             PIP_EXEC_STANZA + ["install", "--index-url", "index_url", "--extra-index-url", "extra_index_url",
-                               "--force-reinstall", '/whatever dist'], cwd=".", env=ANY, outfile_name=ANY,
+                               "--force-reinstall", os.path.normpath('/whatever dist')],
+            cwd=".", env=ANY, outfile_name=ANY,
             error_file_name=ANY, shell=False)
 
     @patch("pybuilder.plugins.python.distutils_plugin.os.mkdir")

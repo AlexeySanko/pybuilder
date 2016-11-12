@@ -19,6 +19,8 @@
 import unittest
 from test_utils import Mock, patch, ANY
 
+import os
+
 from pybuilder.core import Project
 from pybuilder.plugins.python import pytddmon_plugin
 
@@ -36,4 +38,5 @@ class PytddmonPluginTests(unittest.TestCase):
         pytddmon_plugin.pytddmon(project, Mock())
 
         subprocess.Popen.assert_called_with(
-            ['which python', 'which pytddmon.py', '--no-pulse'], shell=False, cwd='src/unittest/python', env=ANY)
+            ['which python', 'which pytddmon.py', '--no-pulse'], shell=False,
+            cwd=os.path.normpath('src/unittest/python'), env=ANY)
