@@ -88,3 +88,4 @@ There will also be a git tag with each release. Please note that we do not curre
 
 ## Development
 See [developing PyBuilder](http://pybuilder.github.io/documentation/developing_pybuilder.html)
+Pay attention that Windows OS could have problems with [os.symlink library](http://stackoverflow.com/questions/6260149/os-symlink-support-in-windows).
