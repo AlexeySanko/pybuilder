@@ -17,9 +17,11 @@
 #   limitations under the License.
 
 from unittest import TestCase
-import os
-from pybuilder.core import Project
 from test_utils import Mock, patch
+
+from os.path import normpath as os_normpath
+
+from pybuilder.core import Project
 from logging import Logger
 from pybuilder.plugins.ronn_manpage_plugin import (
     build_generate_manpages_command,
@@ -33,12 +35,12 @@ class RonnManpagePluginTests(TestCase):
 
     def test_should_generate_command_abiding_to_configuration(self):
         project = Project('egg')
-        project.set_property("dir_manpages", os.path.normpath("docs/man"))
+        project.set_property("dir_manpages", os_normpath("docs/man"))
         project.set_property("manpage_source", "README.md")
         project.set_property("manpage_section", 1)
 
         self.assertEqual(build_generate_manpages_command(project),
-                         os.path.normpath('ronn -r --pipe README.md | gzip -9 > docs/man/egg.1.gz'))
+                         os_normpath('ronn -r --pipe README.md | gzip -9 > docs/man/egg.1.gz'))
 
 
 class RonnPluginInitializationTests(TestCase):

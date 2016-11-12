@@ -19,7 +19,7 @@
 from unittest import TestCase
 from test_utils import Mock, patch
 
-import os
+from os.path import normpath as os_normpath
 
 from pybuilder.core import Project
 from pybuilder.errors import BuildFailedException
@@ -46,7 +46,7 @@ class RunSonarAnalysisTest(TestCase):
             "-Dsonar.projectName=project_name "
             "-Dsonar.projectVersion=0.0.1 "
             "-Dsonar.sources=src/main/python " +
-            os.path.normpath("-Dsonar.python.coverage.reportPath=target/reports/coverage*.xml"))
+            os_normpath("-Dsonar.python.coverage.reportPath=target/reports/coverage*.xml"))
 
     @patch("pybuilder.plugins.python.sonarqube_plugin.SonarCommandBuilder.run")
     def test_should_break_build_when_sonar_runner_fails(self, run_sonar_command):

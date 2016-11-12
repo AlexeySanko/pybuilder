@@ -16,29 +16,29 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-import os
-import types
+from test_utils import patch
 import unittest
-
 from pyassert import assert_that
+
+from os.path import normpath as os_normpath
+import types
 
 from pybuilder.core import (Project, Logger, init, INITIALIZER_ATTRIBUTE,
                             ENVIRONMENTS_ATTRIBUTE, task, description,
                             Dependency, RequirementsFile)
 from pybuilder.errors import MissingPropertyException
-from test_utils import patch
 
 
 class ProjectTest(unittest.TestCase):
     def setUp(self):
-        self.project = Project(basedir=os.path.normpath("/imaginary"), name="Unittest")
+        self.project = Project(basedir=os_normpath("/imaginary"), name="Unittest")
 
     @patch("pybuilder.core.os.path.basename", return_value="imaginary")
     def test_should_pick_directory_name_for_project_name_when_name_is_not_given(self, os_path_basename):
-        project = Project(basedir=os.path.normpath("/imaginary"))
+        project = Project(basedir=os_normpath("/imaginary"))
 
         self.assertEquals("imaginary", project.name)
-        os_path_basename.assert_called_with(os.path.normpath("/imaginary"))
+        os_path_basename.assert_called_with(os_normpath("/imaginary"))
 
     def test_get_property_should_return_default_value_when_property_is_not_set(self):
         self.assertEquals("spam", self.project.get_property("spam", "spam"))
@@ -91,14 +91,14 @@ class ProjectTest(unittest.TestCase):
     def test_expand_path_should_return_expanded_path(self):
         self.project.set_property("spam", "spam")
         self.project.set_property("eggs", "eggs")
-        self.assertEquals(os.path.join(os.path.normpath("/imaginary"), "spam", "eggs"),
+        self.assertEquals(os.path.join(os_normpath("/imaginary"), "spam", "eggs"),
                           self.project.expand_path("$spam/$eggs"))
 
     def test_expand_path_should_return_expanded_path_and_additional_parts_when_additional_parts_are_given(self):
         self.project.set_property("spam", "spam")
         self.project.set_property("eggs", "eggs")
         self.assertEquals(
-            os.path.join(os.path.normpath("/imaginary"), "spam", "eggs", "foo", "bar"),
+            os.path.join(os_normpath("/imaginary"), "spam", "eggs", "foo", "bar"),
             self.project.expand_path("$spam/$eggs", "foo", "bar"))
 
     def test_should_raise_exception_when_getting_mandatory_propert_and_property_is_not_found(self):
@@ -235,7 +235,7 @@ class ProjectPackageDataTests(unittest.TestCase):
         self.assertEquals(
             {"monty": ["ham"], "spam": ["eggs"]}, self.project.package_data)
         self.assertEquals(
-            [os.path.normpath("spam/eggs"), os.path.normpath("monty/ham")],
+            [os_normpath("spam/eggs"), os_normpath("monty/ham")],
             self.project.manifest_included_files)
 
 

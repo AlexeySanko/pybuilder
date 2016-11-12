@@ -19,9 +19,9 @@
 from __future__ import unicode_literals
 
 from unittest import TestCase, TextTestRunner
-import os
-
 from test_utils import Mock, patch
+
+from os.path import normpath as os_normpath
 
 from pybuilder.core import Project
 from pybuilder.plugins.python.unittest_plugin import (execute_tests, execute_tests_matching,
@@ -45,17 +45,17 @@ class PythonPathTests(TestCase):
 
         _register_test_and_source_path_and_return_test_dir(self.project, system_path, "unittest")
 
-        self.assertTrue(os.path.normpath('/path/to/project/unittest') in system_path)
-        self.assertTrue(os.path.normpath('/path/to/project/src') in system_path)
+        self.assertTrue(os_normpath('/path/to/project/unittest') in system_path)
+        self.assertTrue(os_normpath('/path/to/project/src') in system_path)
 
     def test_should_put_project_sources_before_other_sources(self):
-        system_path = [os.path.normpath('irrelevant/sources')]
+        system_path = [os_normpath('irrelevant/sources')]
 
         _register_test_and_source_path_and_return_test_dir(self.project, system_path, "unittest")
 
-        test_sources_index_in_path = system_path.index(os.path.normpath('/path/to/project/unittest'))
-        main_sources_index_in_path = system_path.index(os.path.normpath('/path/to/project/src'))
-        irrelevant_sources_index_in_path = system_path.index(os.path.normpath('irrelevant/sources'))
+        test_sources_index_in_path = system_path.index(os_normpath('/path/to/project/unittest'))
+        main_sources_index_in_path = system_path.index(os_normpath('/path/to/project/src'))
+        irrelevant_sources_index_in_path = system_path.index(os_normpath('irrelevant/sources'))
         self.assertTrue(test_sources_index_in_path < irrelevant_sources_index_in_path and
                         main_sources_index_in_path < irrelevant_sources_index_in_path)
 

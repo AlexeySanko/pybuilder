@@ -25,7 +25,7 @@ except NameError:
 
 import unittest
 
-import os
+from os.path import normpath as os_normpath
 import sys
 
 from pybuilder.core import Project, Author, Logger
@@ -379,7 +379,7 @@ class RenderSetupScriptTest(PyBuilderTestCase):
         self.project.set_property("dir_dist_scripts", 'scripts')
         actual_build_script = build_scripts_string(self.project)
         self.assertEquals(
-            os.path.normpath("""[\n            'scripts/spam',
+            os_normpath("""[\n            'scripts/spam',
             'scripts/eggs'
         ]"""), actual_build_script)
 
@@ -648,7 +648,7 @@ class RenderManifestFileTest(unittest.TestCase):
 
         actual_manifest_file = render_manifest_file(project)
 
-        self.assertEqual(os.path.normpath("""include file1
+        self.assertEqual(os_normpath("""include file1
 include file2
 include spam/eggs
 """), actual_manifest_file)
@@ -763,7 +763,7 @@ class TasksTest(PyBuilderTestCase):
         install_distribution(self.project, MagicMock(Logger))
         execute_command.assert_called_with(PIP_EXEC_STANZA + ["install",
                                                               "--force-reinstall",
-                                                              os.path.normpath('/whatever dist')],
+                                                              os_normpath('/whatever dist')],
                                            cwd=".", env=ANY,
                                            outfile_name=ANY, error_file_name=ANY, shell=False)
 
@@ -777,7 +777,7 @@ class TasksTest(PyBuilderTestCase):
         install_distribution(self.project, MagicMock(Logger))
         execute_command.assert_called_with(
             PIP_EXEC_STANZA + ["install", "--index-url", "index_url", "--extra-index-url", "extra_index_url",
-                               "--force-reinstall", os.path.normpath('/whatever dist')],
+                               "--force-reinstall", os_normpath('/whatever dist')],
             cwd=".", env=ANY, outfile_name=ANY,
             error_file_name=ANY, shell=False)
 
