@@ -160,7 +160,7 @@ def discover_files_matching(start_dir, file_glob):
                 yield os.path.join(root, file_name)
 
 
-def execute_command(command_and_arguments, outfile_name=None, env=None, cwd=None, error_file_name=None, shell=False):
+def execute_command(command_and_arguments, outfile_name=None, env=None, cwd=None, error_file_name=None, shell=(sys.platform == 'win32')):
     if error_file_name is None and outfile_name:
         error_file_name = outfile_name + ".err"
 
@@ -184,7 +184,7 @@ def execute_command(command_and_arguments, outfile_name=None, env=None, cwd=None
 
 
 def execute_command_and_capture_output(*command_and_arguments):
-    process_handle = Popen(command_and_arguments, stdout=PIPE, stderr=PIPE)
+    process_handle = Popen(command_and_arguments, stdout=PIPE, stderr=PIPE, shell=(sys.platform == 'win32'))
     stdout, stderr = process_handle.communicate()
     stdout, stderr = stdout.decode(sys.stdout.encoding or 'utf-8'), stderr.decode(sys.stderr.encoding or 'utf-8')
     process_return_code = process_handle.returncode
