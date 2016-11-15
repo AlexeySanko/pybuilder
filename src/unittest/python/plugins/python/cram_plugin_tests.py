@@ -59,8 +59,8 @@ class CramPluginTests(unittest.TestCase):
 
     def test_report(self):
         project = Project('.')
-        project.set_property('dir_reports', '/any/dir')
-        expected = os_normpath('/any/dir/cram.err')
+        project.set_property('dir_reports', os_normpath('/any/dir'))
+        expected = '.' + os_normpath('/any/dir/cram.err')
         received = _report_file(project)
         self.assertEquals(expected, received)
 

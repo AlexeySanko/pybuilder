@@ -170,10 +170,15 @@ class SphinxBuildCommandTests(TestCase):
 
         sphinx_build_command = get_sphinx_build_command(self.project, Mock(), 'JSONx')
 
+        # for Windows call get_sphinx_build_command-> project.expand_path -> os.path.normcase(os.path.join(*elements))
+        # returns path into lowercase (differences Windows and Unix os.path.normcase function
+        json_path = os_normpath("basedir/docs/_build/JSONx")
+        if is_windows():
+            json_path = json_path.lower()
         self.assertEqual(sphinx_build_command,
                          ["sphinx", "-b", "JSONx",
                           os_normpath("basedir/docs") + os_normpath("/"),
-                          os_normpath("basedir/docs/_build/jsonx")])
+                          json_path])
 
     def test_should_generate_sphinx_build_command_builder_dir(self):
         self.project.set_property("sphinx_config_path", "docs/")
@@ -183,10 +188,15 @@ class SphinxBuildCommandTests(TestCase):
 
         sphinx_build_command = get_sphinx_build_command(self.project, Mock(), 'JSONx')
 
+        # for Windows call get_sphinx_build_command-> project.expand_path -> os.path.normcase(os.path.join(*elements))
+        # returns path into lowercase (differences Windows and Unix os.path.normcase function
+        json_path = os_normpath("basedir/docs/_build/JSONx")
+        if is_windows():
+            json_path = json_path.lower()
         self.assertEqual(sphinx_build_command,
                          ["sphinx", "-b", "JSONx",
                           os_normpath("basedir/docs") + os_normpath("/"),
-                          os_normpath("basedir/docs/_build/jsonx")])
+                          json_path])
 
     def test_should_generate_sphinx_quickstart_command_with_project_properties(self):
         self.project.set_property("sphinx_doc_author", "bar")
@@ -358,6 +368,13 @@ from sphinx_pyb_conf import *
              call("b = 'foo'\n"),
              call(last_call)],
             any_order=True)
+        # for Windows call get_sphinx_build_command-> project.expand_path -> os.path.normcase(os.path.join(*elements))
+        # returns path into lowercase (differences Windows and Unix os.path.normcase function)
+        sphinx_output_dir = os_normpath('basedir/sphinx_output_dir/JSONx')
+        reports_sphinx_path = os_normpath('basedir/dir_target/reports/sphinx_JSONx')
+        if is_windows():
+            sphinx_output_dir = sphinx_output_dir.lower()
+            reports_sphinx_path = reports_sphinx_path.lower()
         execute_command.assert_has_calls([
             call([sys.executable, '-m', 'sphinx.apidoc', '-H', 'project_name', '-o',
                   os_normpath('basedir/dir_target/sphinx_pyb/apidoc'),
@@ -369,8 +386,8 @@ from sphinx_pyb_conf import *
                  os_normpath('basedir/dir_target/reports/sphinx-apidoc'), shell=False),
             call([sys.executable, '-m', 'sphinx', '-b', 'JSONx',
                   os_normpath('basedir/sphinx_config_path'),
-                  os_normpath('basedir/sphinx_output_dir/jsonx')],
-                 os_normpath('basedir/dir_target/reports/sphinx_jsonx'), shell=False),
+                  sphinx_output_dir],
+                 reports_sphinx_path, shell=False),
             call([sys.executable, '-m', 'sphinx', '-b', 'pdf',
                   os_normpath('basedir/sphinx_config_path'),
                   os_normpath('basedir/sphinx_output_dir/pdf')],
