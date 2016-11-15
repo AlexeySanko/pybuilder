@@ -41,7 +41,7 @@ class InstallDependencyTest(unittest.TestCase):
     def setUp(self):
         self.project = Project("unittest", ".")
         self.project.set_property("dir_install_logs", "any_directory")
-        self.project.set_property("dir_target", "/any_target_directory")
+        self.project.set_property("dir_target", os_normpath("/any_target_directory"))
         self.logger = Mock(Logger)
         initialize_install_dependencies_plugin(self.project)
 
@@ -58,8 +58,7 @@ class InstallDependencyTest(unittest.TestCase):
                                         (["--upgrade"] if pip_utils.pip_version < "9.0" else
                                          ["--upgrade", "--upgrade-strategy", "only-if-needed"]) +
                                         ['-c',
-                                         '/unittest/any_target_directory/install_dependencies_constraints',
-                                         # os_normpath('/unittest/any_target_directory/install_dependencies_constraints'),
+                                         os_normpath("unittest/any_target_directory/install_dependencies_constraints"),
                                          'spam'],
                                         ANY, env=ANY, shell=False)
 
