@@ -24,6 +24,7 @@ import sys
 from logging import Logger
 
 from pybuilder.core import Project, Author
+from pybuilder.utils import is_windows
 from pybuilder.plugins.python.sphinx_plugin import (assert_sphinx_is_available,
                                                     assert_sphinx_quickstart_is_available,
                                                     get_sphinx_build_command,
@@ -350,7 +351,7 @@ from sphinx_pyb_conf import *
         mkdir.assert_called_with(os_normpath("basedir/dir_target/sphinx_pyb/apidoc"))
         last_call = os_normpath("\nimport sys\nsys.path.insert(0, 'basedir/dir_source')\n")
         # Windows specific issue of mock_call
-        if sys.platform == 'win32':
+        if is_windows():
             last_call = last_call.replace("\\", "\\\\")
         open().__enter__().write.assert_has_calls(
             [call("a = 1\n"),

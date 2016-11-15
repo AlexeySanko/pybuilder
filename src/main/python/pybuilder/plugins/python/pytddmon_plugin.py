@@ -20,6 +20,7 @@ import subprocess
 import sys
 
 from pybuilder.core import use_plugin, task, init, description
+from pybuilder.utils import is_windows
 
 use_plugin('python.core')
 
@@ -44,4 +45,4 @@ def pytddmon(project, logger):
     pytddmon_script = subprocess.check_output('which pytddmon.py', shell=True).rstrip('\n')
 
     subprocess.Popen([python_interpreter, pytddmon_script, '--no-pulse'],
-                     shell=(sys.platform == 'win32'), cwd=unittest_directory, env=environment)
+                     shell=is_windows(), cwd=unittest_directory, env=environment)

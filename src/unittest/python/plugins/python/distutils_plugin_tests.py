@@ -31,6 +31,7 @@ import sys
 from pybuilder.core import Project, Author, Logger
 from pybuilder.errors import BuildFailedException
 from pybuilder.pip_utils import PIP_EXEC_STANZA
+from pybuilder.utils import is_windows
 from pybuilder.plugins.python.distutils_plugin import (build_data_files_string,
                                                        build_dependency_links_string,
                                                        build_install_dependencies_string,
@@ -686,8 +687,8 @@ class ExecuteDistUtilsTest(PyBuilderTestCase):
     def test__run_process_and_wait(self, popen):
         commands = ["a", "b", "c"]
         _run_process_and_wait(commands, "test cwd", "test stdout", "test_stderr")
-        curr_shell = (sys.platform == 'win32')
-        popen.assert_called_with(commands, cwd="test cwd", stdout="test stdout", stderr="test_stderr", shell=curr_shell)
+        popen.assert_called_with(commands, cwd="test cwd", stdout="test stdout",
+                                 stderr="test_stderr", shell=is_windows())
 
 
 class TasksTest(PyBuilderTestCase):

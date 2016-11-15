@@ -24,6 +24,7 @@ import sys
 
 from pybuilder.core import Project
 from pybuilder.plugins.python import pytddmon_plugin
+from pybuilder.utils import is_windows
 
 
 class PytddmonPluginTests(unittest.TestCase):
@@ -39,5 +40,5 @@ class PytddmonPluginTests(unittest.TestCase):
         pytddmon_plugin.pytddmon(project, Mock())
 
         subprocess.Popen.assert_called_with(
-            ['which python', 'which pytddmon.py', '--no-pulse'], shell=(sys.platform == 'win32'),
+            ['which python', 'which pytddmon.py', '--no-pulse'], shell=is_windows(),
             cwd=os_normpath('src/unittest/python'), env=ANY)

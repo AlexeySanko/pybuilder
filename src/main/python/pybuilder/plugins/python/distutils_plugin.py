@@ -40,7 +40,8 @@ from pybuilder.utils import (as_list,
                              is_notstr_iterable,
                              get_dist_version_string,
                              safe_log_file_name,
-                             assert_can_execute)
+                             assert_can_execute,
+                             is_windows)
 from pybuilder.pip_utils import build_dependency_version_string
 from textwrap import dedent
 from pybuilder.pip_utils import pip_install
@@ -562,7 +563,7 @@ def _run_process_and_wait(commands, cwd, stdout, stderr=None):
                                cwd=cwd,
                                stdout=stdout,
                                stderr=stderr or stdout,
-                               shell=(sys.platform == 'win32'))
+                               shell=is_windows())
     return process.wait()
 
 

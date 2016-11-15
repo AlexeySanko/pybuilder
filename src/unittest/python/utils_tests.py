@@ -40,7 +40,8 @@ from pybuilder.utils import (GlobExpression,
                              render_report,
                              timedelta_in_millis,
                              fork_process,
-                             execute_command)
+                             execute_command,
+                             is_windows)
 from test_utils import patch, Mock
 
 
@@ -359,7 +360,6 @@ class ForkTest(unittest.TestCase):
 
         try:
             val = fork_process(Mock(), target=test_func)
-            val = fork_process(Mock(), target=test_func)
             self.fail("should not have reached here, returned %s" % val)
         except:
             ex_type, ex, tb = sys.exc_info()
@@ -375,15 +375,17 @@ class ForkTest(unittest.TestCase):
         def test_func():
             return FooError()
 
-        try:
-            fork_process(Mock(), target=test_func)
-            self.fail("should not have reached here")
-        except:
-            ex_type, ex, tb = sys.exc_info()
-            self.assertEquals(ex_type, Exception)
-            self.assertTrue(str(ex).startswith("Fatal error occurred in the forked process"))
-            self.assertTrue("Can't pickle" in str(ex))
-            self.assertTrue("FooError" in str(ex))
+        # forking doesn't work into Windows
+        if not is_windows():
+            try:
+                fork_process(Mock(), target=test_func)
+                self.fail("should not have reached here")
+            except:
+                ex_type, ex, tb = sys.exc_info()
+                self.assertEquals(ex_type, Exception)
+                self.assertTrue(str(ex).startswith("Fatal error occurred in the forked process"))
+                self.assertTrue("Can't pickle" in str(ex))
+                self.assertTrue("FooError" in str(ex))
 
     def testForkWithExceptionPicklingError(self):
         class FooError(Exception):
@@ -398,10 +400,15 @@ class ForkTest(unittest.TestCase):
             self.fail("should not have reached here, returned %s" % val)
         except:
             ex_type, ex, tb = sys.exc_info()
-            self.assertEquals(ex_type, Exception)
-            self.assertTrue(str(ex).startswith("Fatal error occurred in the forked process"))
-            self.assertTrue("Can't pickle" in str(ex))
-            self.assertTrue("FooError" in str(ex))
+            # forking doesn't work into Windows
+            if is_windows():
+                self.assertEquals(ex_type, type(FooError()))
+                self.assertEquals(ex.val, 'Blah')
+            else:
+                self.assertEquals(ex_type, Exception)
+                self.assertTrue(str(ex).startswith("Fatal error occurred in the forked process"))
+                self.assertTrue("Can't pickle" in str(ex))
+                self.assertTrue("FooError" in str(ex))
 
     def testForkWithSendPicklingError(self):
         class Foo(object):
@@ -421,12 +428,16 @@ class ForkTest(unittest.TestCase):
             self.fail("should not have reached here, returned %s" % val)
         except:
             ex_type, ex, tb = sys.exc_info()
-            self.assertEquals(ex_type, Exception)
-            self.assertTrue(str(ex).startswith("Fatal error occurred in the forked process"))
-            self.assertTrue("Can't pickle" in str(ex))
-            self.assertTrue("FooError" in str(ex))
-            self.assertTrue("This error masked the send error '<function" in str(ex))
-            self.assertTrue("raise FooError(Foo.bar)" in str(ex))
+            # forking doesn't work into Windows
+            if is_windows():
+                self.assertEquals(ex_type, type(FooError(Foo.bar)))
+            else:
+                self.assertEquals(ex_type, Exception)
+                self.assertTrue(str(ex).startswith("Fatal error occurred in the forked process"))
+                self.assertTrue("Can't pickle" in str(ex))
+                self.assertTrue("FooError" in str(ex))
+                self.assertTrue("This error masked the send error '<function" in str(ex))
+                self.assertTrue("raise FooError(Foo.bar)" in str(ex))
 
 
 class CommandExecutionTest(unittest.TestCase):

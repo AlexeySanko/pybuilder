@@ -58,7 +58,8 @@ class InstallDependencyTest(unittest.TestCase):
                                         (["--upgrade"] if pip_utils.pip_version < "9.0" else
                                          ["--upgrade", "--upgrade-strategy", "only-if-needed"]) +
                                         ['-c',
-                                         os_normpath('/unittest/any_target_directory/install_dependencies_constraints'),
+                                         '/unittest/any_target_directory/install_dependencies_constraints',
+                                         # os_normpath('/unittest/any_target_directory/install_dependencies_constraints'),
                                          'spam'],
                                         ANY, env=ANY, shell=False)
 

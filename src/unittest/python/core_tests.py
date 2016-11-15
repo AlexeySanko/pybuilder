@@ -20,7 +20,7 @@ from test_utils import patch
 import unittest
 from pyassert import assert_that
 
-from os.path import normpath as os_normpath
+from os.path import normpath as os_normpath, join
 import types
 
 from pybuilder.core import (Project, Logger, init, INITIALIZER_ATTRIBUTE,
@@ -91,14 +91,14 @@ class ProjectTest(unittest.TestCase):
     def test_expand_path_should_return_expanded_path(self):
         self.project.set_property("spam", "spam")
         self.project.set_property("eggs", "eggs")
-        self.assertEquals(os.path.join(os_normpath("/imaginary"), "spam", "eggs"),
+        self.assertEquals(join(os_normpath("/imaginary"), "spam", "eggs"),
                           self.project.expand_path("$spam/$eggs"))
 
     def test_expand_path_should_return_expanded_path_and_additional_parts_when_additional_parts_are_given(self):
         self.project.set_property("spam", "spam")
         self.project.set_property("eggs", "eggs")
         self.assertEquals(
-            os.path.join(os_normpath("/imaginary"), "spam", "eggs", "foo", "bar"),
+            join(os_normpath("/imaginary"), "spam", "eggs", "foo", "bar"),
             self.project.expand_path("$spam/$eggs", "foo", "bar"))
 
     def test_should_raise_exception_when_getting_mandatory_propert_and_property_is_not_found(self):

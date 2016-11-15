@@ -60,7 +60,8 @@ class PycharmPluginTests(unittest.TestCase):
         project.set_property('dir_source_unittest_python', 'src/unittest/python')
         project.set_property('dir_source_integrationtest_python', 'src/integrationtest/python')
         mock_open.return_value = MagicMock(spec=TYPE_FILE)
-        os.path.join.side_effect = lambda first, second: first + '/' + second
+        from os import sep as os_sep
+        os.path.join.side_effect = lambda first, second: first + os_sep + second
 
         pycharm_generate(project, Mock())
 

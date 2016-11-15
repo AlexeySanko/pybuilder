@@ -160,7 +160,10 @@ def discover_files_matching(start_dir, file_glob):
                 yield os.path.join(root, file_name)
 
 
-def execute_command(command_and_arguments, outfile_name=None, env=None, cwd=None, error_file_name=None, shell=(sys.platform == 'win32')):
+def execute_command(command_and_arguments, outfile_name=None, env=None, cwd=None, error_file_name=None,
+                    shell=None):
+    if not shell:
+        shell = is_windows()
     if error_file_name is None and outfile_name:
         error_file_name = outfile_name + ".err"
 
@@ -184,7 +187,7 @@ def execute_command(command_and_arguments, outfile_name=None, env=None, cwd=None
 
 
 def execute_command_and_capture_output(*command_and_arguments):
-    process_handle = Popen(command_and_arguments, stdout=PIPE, stderr=PIPE, shell=(sys.platform == 'win32'))
+    process_handle = Popen(command_and_arguments, stdout=PIPE, stderr=PIPE, shell=is_windows())
     stdout, stderr = process_handle.communicate()
     stdout, stderr = stdout.decode(sys.stdout.encoding or 'utf-8'), stderr.decode(sys.stderr.encoding or 'utf-8')
     process_return_code = process_handle.returncode
@@ -194,7 +197,7 @@ def execute_command_and_capture_output(*command_and_arguments):
 def assert_can_execute(command_and_arguments, prerequisite, caller):
     with tempfile.NamedTemporaryFile() as f:
         try:
-            process = subprocess.Popen(command_and_arguments, stdout=f, stderr=f, shell=(sys.platform == 'win32'))
+            process = subprocess.Popen(command_and_arguments, stdout=f, stderr=f, shell=is_windows())
             process.wait()
         except OSError:
             raise MissingPrerequisiteException(prerequisite, caller)

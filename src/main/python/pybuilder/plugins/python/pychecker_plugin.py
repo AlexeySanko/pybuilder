@@ -139,7 +139,8 @@ def parse_pychecker_output(project, warnings):
         file_name = match.group(1)
         line_number = match.group(2)
         message = match.group(3)
-        module = file_name.replace(sources_base_dir, "")[1:].replace(os.sep, ".")
+        # direct call into windows returns paths with initial separator
+        module = file_name.replace(sources_base_dir, "")[1:].replace("/", ".")
         report.get_module_report(module).add_warning(PycheckerWarning(message, line_number))
 
     return report
