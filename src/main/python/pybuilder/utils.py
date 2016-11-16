@@ -199,6 +199,8 @@ def assert_can_execute(command_and_arguments, prerequisite, caller):
         try:
             process = subprocess.Popen(command_and_arguments, stdout=f, stderr=f, shell=is_windows())
             process.wait()
+            if process.returncode != 0:
+                raise OSError()
         except OSError:
             raise MissingPrerequisiteException(prerequisite, caller)
 

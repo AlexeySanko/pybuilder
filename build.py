@@ -25,6 +25,7 @@ sys.path.insert(0, 'src/main/python')  # This is only necessary in PyBuilder sou
 
 from pybuilder import bootstrap
 from pybuilder.core import Author, init, use_plugin
+from pybuilder.utils import is_windows
 
 bootstrap()
 
@@ -39,7 +40,7 @@ use_plugin("source_distribution")
 
 use_plugin("python.unittest")
 
-if sys.platform != 'win32':
+if not is_windows():
     use_plugin("python.cram")
 
 use_plugin("python.integrationtest")
@@ -131,7 +132,7 @@ def initialize(project):
 
     # enable this to build a bdist on vagrant
     # project.set_property("distutils_issue8876_workaround_enabled", True)
-    # project.set_property("distutils_readme_description", True)
+    project.set_property("distutils_readme_description", True)
     project.set_property("distutils_description_overwrite", True)
     project.set_property("distutils_console_scripts", ["pyb_ = pybuilder.cli:main"])
     project.set_property("distutils_classifiers", [

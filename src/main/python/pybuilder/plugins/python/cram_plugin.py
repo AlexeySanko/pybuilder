@@ -23,6 +23,23 @@
     https://pypi.python.org/pypi/cram
 """
 
+# for using cram into Windows
+# 1) make Windows compatibility changes into Cram
+# after this changes cram plugin could be used with
+# project.set_property("cram_fail_if_no_tests", False)
+# 2)
+# to run_cram_tests we need to add before execution:
+# if is_windows():
+#     command_and_arguments.extend(['--shell', 'cmd.exe'])
+# from pybuilder.utils import assert_can_execute, discover_files_matching, read_file, is_windows
+# def _prepend_path(env, variable, value):
+#     env_var_sep = ";" if is_windows() else ":"
+#     env[variable] = value + env_var_sep + env.get(variable, '')
+# 3) write Windows based cram tests
+# 4) add project.property project.set_property_if_unset("cram_windows_specific_test_file_glob", "*.win.t")
+# 5) if is_windows() collect only windows specific tests
+
+
 import os
 
 from pybuilder.core import after, task, init, use_plugin, depends, description
